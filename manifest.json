@@ -1,5 +1,18 @@
 {
-    "name": "Booky-Marky",
     "manifest_version": 3,
-    "version": "0.1.0"
+    "name": "Booky-Marky",
+    "version": "0.1.0",
+    "description": "",
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "action": {
+       
+    },
+    "permissions": ["scripting", "activeTab", "bookmarks"],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+    ]
 }
