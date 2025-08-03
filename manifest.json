@@ -10,7 +10,7 @@
     "action": {
        
     },
-    "permissions": ["scripting", "activeTab", "bookmarks"],
+    "permissions": ["scripting", "activeTab", "bookmarks", "tabs"],
     "host_permissions": [
         "http://*/*",
         "https://*/*"
