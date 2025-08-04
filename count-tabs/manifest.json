@@ -1,10 +1,15 @@
 {
     "name": "counttabs",
-    "description": "Counts tabs",
+    "description": "Counts tabsk",
     "manifest_version": 3,
     "version": "0.1",
     "background": {
         "service_worker": "background.js"
     },
-    "action":  {}
+    "action": {
+        "default_icon": {
+            "16": "icons/tab.png",
+            "48": "icons/tab.png"
+        }
+    }
 }
