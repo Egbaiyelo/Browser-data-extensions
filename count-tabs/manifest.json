@@ -1,6 +1,6 @@
 {
-    "name": "counttabs",
-    "description": "Counts tabsk",
+    "name": "Browser-data",
+    "description": "Get Browser data",
     "manifest_version": 3,
     "version": "0.1",
     "background": {
