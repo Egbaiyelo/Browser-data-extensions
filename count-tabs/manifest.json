@@ -10,7 +10,8 @@
         "default_icon": {
             "16": "icons/tab.png",
             "48": "icons/tab.png"
-        }
+        }, 
+        "default_popup": "popup.html"
     },
     "permissions": ["bookmarks"]
 }
