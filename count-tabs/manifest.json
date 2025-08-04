@@ -11,5 +11,6 @@
             "16": "icons/tab.png",
             "48": "icons/tab.png"
         }
-    }
+    },
+    "permissions": ["bookmarks"]
 }

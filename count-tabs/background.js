@@ -54,5 +54,22 @@ chrome.action.onClicked.addListener(() => {
         }
     });
 
-
+    // Handle bookmarks
+    chrome.bookmarks.getTree((bookmarkTreeNodes) => {
+        console.log("doing")
+        let count = 0;
+        function countBookmarks(nodes) {
+            for (let node of nodes) {
+                if (node.url) {
+                    count++;
+                }
+                if (node.children) {
+                    countBookmarks(node.children);
+                }
+            }
+        }
+        countBookmarks(bookmarkTreeNodes);
+        console.log("Total bookmarks:", count);
+        console.log("Bookmarks API:", chrome.bookmarks);
+    });
 })
