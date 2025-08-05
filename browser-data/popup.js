@@ -11,3 +11,11 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
     }
 });
 
+// chrome.runtime.onMessage.addListener((message) => {
+//     if (message.action === "updateData") {
+//         document.getElementById("tabs").textContent = `Total Tabs: ${message.tabs}`;
+//         document.getElementById("incognito_tabs").textContent = `Incognito Tabs: ${message.incognito_tabs}`;
+//         document.getElementById("windows").textContent = `Total windows: ${message.windows}`;
+//         document.getElementById("incognito_windows").textContent = `Incognito windows: ${message.incognito_windows}`;
+//     }
+// });
