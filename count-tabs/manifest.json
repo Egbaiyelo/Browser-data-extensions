@@ -1,0 +1,17 @@
+{
+    "name": "Browser-data",
+    "description": "Get Browser data",
+    "manifest_version": 3,
+    "version": "0.1",
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_icon": {
+            "16": "icons/tab.png",
+            "48": "icons/tab.png"
+        }, 
+        "default_popup": "popup.html"
+    },
+    "permissions": ["bookmarks"]
+}
