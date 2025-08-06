@@ -1,6 +1,5 @@
 
-// let data;
-
+chrome.action.setBadgeBackgroundColor({ color: '#eef119ff' });
 let data = {
     windows: 0,
     tabs: 0,
@@ -9,8 +8,11 @@ let data = {
     incognito_tabs: 0,
     bookmarks: 0,
 };
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
+
+function getData() {
+
+    console.log("got message")
     // Handle windows
     chrome.windows.getAll({}, (windows) => {
         data.windows = windows.length;
@@ -22,7 +24,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             data.incognito_tabs = tabs.filter(tab => tab.incognito).length;
             // Set Badge
             chrome.action.setBadgeText({ text: data.tabs.toString() });
-            chrome.action.setBadgeBackgroundColor({ color: '#eef119ff' });
 
             // Handle current window
             chrome.windows.getCurrent({ populate: true }, (currentWindow) => {
@@ -63,72 +64,93 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         console.log(Array.from(results));
                     });
 
-                    sendResponse(data);
+                    return data;
                 });
             });
         });
     });
 
-    return true;
+    return data;
+}
+
+
+//--- Subscribing listeners ---
+// On popup message
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action = "getData") {
+        sendResponse(getData())
+        return true;
+    }
 });
-
-
+// On browser startup
+chrome.runtime.onStartup.addListener(() => {
+    chrome.runtime.sendMessage({ action: "getData" }, (response) => { });
+    getData();
+})
+// On install
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.runtime.sendMessage({ action: "getData" }, (response) => { });
+    getData();
+})
 
 
 
 
 // Future syncing update, update badge and count on startup maybe
+// - Still no need to update popup
 
-// // Update tabs
-// chrome.tabs.onCreated.addListener((tab) => {
-//     if (tab.incognito) data.incognito_tabs += 1;
-//     data.tabs += 1;
+// Update tabs
+chrome.tabs.onCreated.addListener((tab) => {
+    if (tab.incognito) data.incognito_tabs += 1;
+    data.tabs += 1;
 
-//     chrome.action.setBadgeText({ text: data.tabs });
+    console.log('got update - add');
+    chrome.action.setBadgeText({ text: data.tabs.toString() });
 
-//     chrome.runtime.sendMessage({
-//         action: "updateData",
-//         tabs: data.tabs,
-//         incognito_tabs: data.incognito_tabs
-//     });
-// });
+    chrome.runtime.sendMessage({
+        action: "updateData",
+        tabs: data.tabs,
+        incognito_tabs: data.incognito_tabs
+    });
+});
 
-// // Update tabs remove
-// chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-//     if (removeInfo.incognito) { data.incognito_tabs -= 1; }
-//     data.tabs -= 1;
+// Update tabs remove
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+    if (removeInfo.incognito) { data.incognito_tabs -= 1; }
+    data.tabs -= 1;
 
-//     chrome.action.setBadgeText({ text: data.tabs });
+    console.log('got update - remove')
+    chrome.action.setBadgeText({ text: data.tabs.toString() });
 
-//     chrome.runtime.sendMessage({
-//         action: "updateData",
-//         tabs: data.tabs,
-//         incognito_tabs: data.incognito_tabs
-//     });
-// });
+    chrome.runtime.sendMessage({
+        action: "updateData",
+        tabs: data.tabs,
+        incognito_tabs: data.incognito_tabs
+    });
+});
 
-// // Update window count
-// chrome.windows.onCreated.addListener((window) => {
-//     data.windows += 1;
-//     if (window.incognito) data.incognito_windows += 1;
+// Update window count
+chrome.windows.onCreated.addListener((window) => {
+    data.windows += 1;
+    if (window.incognito) data.incognito_windows += 1;
 
-//     chrome.runtime.sendMessage({
-//         action: "updateData",
-//         windows: data.windows,
-//         incognito_windows: data.incognito_windows
-//     });
-// });
+    chrome.runtime.sendMessage({
+        action: "updateData",
+        windows: data.windows,
+        incognito_windows: data.incognito_windows
+    });
+});
 
-// // update window removed
-// chrome.windows.onRemoved.addListener((windowId) => {
-//     chrome.windows.getAll({}, (windows) => {
-//         data.windows = windows.length;
-//         data.incognito_windows = windows.filter(win => win.incognito).length;
+// update window removed
+chrome.windows.onRemoved.addListener((windowId) => {
+    chrome.windows.getAll({}, (windows) => {
+        data.windows = windows.length;
+        data.incognito_windows = windows.filter(win => win.incognito).length;
 
-//         chrome.runtime.sendMessage({
-//             action: "updateData",
-//             windows: data.windows,
-//             incognito_windows: data.incognito_windows
-//         });
-//     });
-// });
+        chrome.runtime.sendMessage({
+            action: "updateData",
+            windows: data.windows,
+            incognito_windows: data.incognito_windows
+        });
+    });
+});

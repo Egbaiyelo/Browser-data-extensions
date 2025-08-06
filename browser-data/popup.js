@@ -2,6 +2,7 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
     if (chrome.runtime.lastError) {
         console.error("Message failed:", chrome.runtime.lastError);
     } else {
+        console.log(response)
         document.getElementById("tabs").textContent = `Total Tabs: ${response.tabs}`;
         document.getElementById("incognito_tabs").textContent = `Incognito Tabs: ${response.incognito_tabs}`;
         document.getElementById("windows").textContent = `Total windows: ${response.windows}`;

@@ -8,8 +8,8 @@
     },
     "action": {
         "default_icon": {
-            "16": "icons/tab.png",
-            "48": "icons/tab.png"
+            "16": "icons/browser.png",
+            "48": "icons/browser.png"
         }, 
         "default_popup": "popup.html"
     },
