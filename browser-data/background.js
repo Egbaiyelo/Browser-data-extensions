@@ -64,12 +64,14 @@ function getData() {
                         console.log(Array.from(results));
                     });
 
+                    chrome.storage.local.set(data);
                     return data;
                 });
             });
         });
     });
 
+    chrome.storage.local.set(data);
     return data;
 }
 
@@ -99,36 +101,48 @@ chrome.runtime.onInstalled.addListener(() => {
 // Future syncing update, update badge and count on startup maybe
 // - Still no need to update popup
 
+//- Update tabs and remove laggy
 // Update tabs
 chrome.tabs.onCreated.addListener((tab) => {
-    if (tab.incognito) data.incognito_tabs += 1;
-    data.tabs += 1;
+    chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
 
-    console.log('got update - add');
-    chrome.action.setBadgeText({ text: data.tabs.toString() });
+        const _tabs = (data.tabs || 0) + 1;
+        console.log(data, data.tabs, _tabs)
+        const _incognito_tabs = (data.incognito_tabs || 0) + (tab.incognito ? 1 : 0);
 
-    chrome.runtime.sendMessage({
-        action: "updateData",
-        tabs: data.tabs,
-        incognito_tabs: data.incognito_tabs
+        chrome.action.setBadgeText({ text: _tabs.toString() });
+        chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
+
+        chrome.runtime.sendMessage({
+            action: "updateData",
+            tabs: data.tabs,
+            incognito_tabs: data.incognito_tabs
+        });
     });
 });
 
 // Update tabs remove
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-    if (removeInfo.incognito) { data.incognito_tabs -= 1; }
-    data.tabs -= 1;
+    chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
 
-    console.log('got update - remove')
-    chrome.action.setBadgeText({ text: data.tabs.toString() });
+        const _tabs = (data.tabs || 0) - 1;
+        console.log(data, data.tabs, _tabs)
 
-    chrome.runtime.sendMessage({
-        action: "updateData",
-        tabs: data.tabs,
-        incognito_tabs: data.incognito_tabs
-    });
+        const _incognito_tabs = (data.incognito_tabs || 0) - (removeInfo.incognito ? 1 : 0);
+
+        console.log('got update - remove')
+        chrome.action.setBadgeText({ text: data.tabs.toString() });
+        chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
+
+        chrome.runtime.sendMessage({
+            action: "updateData",
+            tabs: data.tabs,
+            incognito_tabs: data.incognito_tabs
+        });
+    })
 });
 
+// counts everything anyway?
 // Update window count
 chrome.windows.onCreated.addListener((window) => {
     data.windows += 1;
