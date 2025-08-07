@@ -10,9 +10,8 @@ let data = {
 };
 
 
-function getData() {
+function oldGetData() {
 
-    console.log("got message")
     // Handle windows
     chrome.windows.getAll({}, (windows) => {
         data.windows = windows.length;
@@ -64,12 +63,74 @@ function getData() {
                         console.log(Array.from(results));
                     });
 
+                    console.log("**************************")
                     chrome.storage.local.set(data);
                     return data;
                 });
             });
         });
     });
+
+    console.log(
+        "((((((((((((((((((((((((((((((9"
+    )
+    chrome.storage.local.set(data);
+    return data;
+}
+async function getData() {
+
+    // Handle windows
+    const windows = await new Promise(resolve => chrome.windows.getAll({}, resolve));
+    data.windows = windows.length;
+    data.incognito_windows = windows.filter(win => win.incognito).length;
+
+
+    // Handle tabs
+    const tabs = await new Promise(resolve => chrome.tabs.query({}, resolve));
+    data.tabs = tabs.length;
+    data.incognito_tabs = tabs.filter(tab => tab.incognito).length;
+    // Set Badge
+    chrome.action.setBadgeText({ text: data.tabs.toString() });
+
+
+    // Handle current window
+    const currentWindow = await new Promise(resolve => chrome.windows.getCurrent({ populate: true }, resolve));
+    data.current_window_tabs = currentWindow?.tabs?.length || 0;
+
+
+    // Handle bookmarks
+    const bookmarkTreeNodes = await new Promise(resolve => chrome.bookmarks.getTree(resolve));
+    let count = 0;
+    function countBookmarks(nodes) {
+        nodes.forEach(node => {
+            if (node.url) count++;
+            if (node.children) countBookmarks(node.children);
+        });
+    }
+    countBookmarks(bookmarkTreeNodes);
+    data.bookmarks = count;
+
+
+    // Get history from last 24 hours
+    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    const historyItems = await new Promise(resolve =>
+        chrome.history.search({ text: "", startTime: oneDayAgo, maxResults: 10000 }, resolve)
+    );
+
+    const visitedDomains = new Set();
+    historyItems.forEach(entry => {
+        try {
+            const url = new URL(entry.url);
+            visitedDomains.add(url.hostname);
+        } catch (e) {
+            console.warn("Invalid URL skipped:", entry.url);
+        }
+    });
+
+    console.log(`Visited domains today: ${visitedDomains.size}`);
+    console.log(Array.from(visitedDomains));
+    console.log(Array.from(historyItems));
+    console.log("**************************");
 
     chrome.storage.local.set(data);
     return data;
@@ -79,19 +140,30 @@ function getData() {
 //--- Subscribing listeners ---
 // On popup message
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action = "getData") {
-        sendResponse(getData())
+    if (message.action == "getData") {
+        console.log("got here~~~~~~~~~~~~")
+        getData().then(data => {
+            sendResponse(data);
+        })
+        chrome.storage.local.get("tabs", (data) => {
+            console.log("here data", data)
+        })
         return true;
     }
 });
 // On browser startup
 chrome.runtime.onStartup.addListener(() => {
-    chrome.runtime.sendMessage({ action: "getData" }, (response) => { });
+    // chrome.runtime.sendMessage({ action: "getData" }, (response) => { });
     getData();
 })
 // On install
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.runtime.sendMessage({ action: "getData" }, (response) => { });
+    // chrome.runtime.sendMessage({ action: "getData" }, (response) => { });
+    getData();
+});
+// 
+chrome.action.onClicked.addListener(() => {
+    // chrome.runtime.sendMessage({ action: "updateData" }, (response) => { });
     getData();
 })
 
@@ -115,8 +187,8 @@ chrome.tabs.onCreated.addListener((tab) => {
 
         chrome.runtime.sendMessage({
             action: "updateData",
-            tabs: data.tabs,
-            incognito_tabs: data.incognito_tabs
+            tabs: _tabs,
+            incognito_tabs: _incognito_tabs
         });
     });
 });
@@ -127,20 +199,20 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 
         const _tabs = (data.tabs || 0) - 1;
         console.log(data, data.tabs, _tabs)
-
         const _incognito_tabs = (data.incognito_tabs || 0) - (removeInfo.incognito ? 1 : 0);
 
         console.log('got update - remove')
-        chrome.action.setBadgeText({ text: data.tabs.toString() });
+        chrome.action.setBadgeText({ text: _tabs.toString() });
         chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
 
         chrome.runtime.sendMessage({
             action: "updateData",
-            tabs: data.tabs,
-            incognito_tabs: data.incognito_tabs
+            tabs: _tabs,
+            incognito_tabs: _incognito_tabs
         });
     })
 });
+
 
 // counts everything anyway?
 // Update window count
