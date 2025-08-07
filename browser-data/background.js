@@ -4,6 +4,7 @@ let data = {
     windows: 0,
     tabs: 0,
     current_window_tabs: 0,
+    inactive_tabs: 0,
     incognito_windows: 0,
     incognito_tabs: 0,
     bookmarks: 0,
@@ -22,6 +23,8 @@ async function getData() {
     const tabs = await new Promise(resolve => chrome.tabs.query({}, resolve));
     data.tabs = tabs.length;
     data.incognito_tabs = tabs.filter(tab => tab.incognito).length;
+    data.inactive_tabs = tabs.filter(tab => !tab.active).length;
+    console.log(data.inactive_tabs);
     // Set Badge
     chrome.action.setBadgeText({ text: data.tabs.toString() });
 
@@ -90,7 +93,7 @@ chrome.runtime.onInstalled.addListener(() => {
 // 
 chrome.action.onClicked.addListener(() => {
     getData();
-})
+});
 
 
 // --- Listening for badge changes ---
@@ -100,6 +103,7 @@ chrome.tabs.onCreated.addListener((tab) => {
 
         const _tabs = (data.tabs || 0) + 1;
         const _incognito_tabs = (data.incognito_tabs || 0) + (tab.incognito ? 1 : 0);
+        // No need to check for incognito or inactive, jsut for badge changes
 
         chrome.action.setBadgeText({ text: _tabs.toString() });
         chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
