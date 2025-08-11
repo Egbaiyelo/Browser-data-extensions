@@ -30,8 +30,9 @@ async function getData() {
 
 
     // Handle current window
-    const currentWindow = await new Promise(resolve => chrome.windows.getCurrent({ populate: true }, resolve));
+    const currentWindow = await new Promise(resolve => chrome.windows.getLastFocused({ populate: true }, resolve));
     data.current_window_tabs = currentWindow?.tabs?.length || 0;
+    console.log("current window",currentWindow, )
 
 
     // Handle bookmarks
@@ -72,6 +73,10 @@ async function getData() {
 }
 
 
+// To run on service worker load
+getData();
+
+
 //--- Subscribing listeners ---
 // On popup message
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -99,39 +104,61 @@ chrome.action.onClicked.addListener(() => {
 // --- Listening for badge changes ---
 // Update tabs
 chrome.tabs.onCreated.addListener((tab) => {
-    chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
-
-        const _tabs = (data.tabs || 0) + 1;
-        const _incognito_tabs = (data.incognito_tabs || 0) + (tab.incognito ? 1 : 0);
-        // No need to check for incognito or inactive, jsut for badge changes
+    chrome.tabs.query({}, (tabs) => {
+        const _tabs = tabs.length;
+        const _incognito_tabs = tabs.filter(t => t.incognito).length;
 
         chrome.action.setBadgeText({ text: _tabs.toString() });
-        chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
+        chrome.storage.local.set({
+            tabs: _tabs,
+            incognito_tabs: _incognito_tabs
+        });
+    })
 
-        // chrome.runtime.sendMessage({
-        //     action: "updateData",
-        //     tabs: _tabs,
-        //     incognito_tabs: _incognito_tabs
-        // });
-    });
+    // Initially I used the local storage to reduce the amount of work needed to 
+    // handle new tabs but it just results in race conditions
+    // chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
+    //     const _tabs = (data.tabs || 0) + 1;
+    //     const _incognito_tabs = (data.incognito_tabs || 0) + (tab.incognito ? 1 : 0);
+    //     // No need to check for incognito or inactive, jsut for badge changes
+    //     chrome.action.setBadgeText({ text: _tabs.toString() });
+    //     chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
+
+    //     // chrome.runtime.sendMessage({
+    //     //     action: "updateData",
+    //     //     tabs: _tabs,
+    //     //     incognito_tabs: _incognito_tabs
+    //     // });
+    // });
 });
 
 // Update tabs remove
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-    chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
-
-        const _tabs = (data.tabs || 0) - 1;
-        const _incognito_tabs = (data.incognito_tabs || 0) - (removeInfo.incognito ? 1 : 0);
+        chrome.tabs.query({}, (tabs) => {
+        const _tabs = tabs.length;
+        const _incognito_tabs = tabs.filter(t => t.incognito).length;
 
         chrome.action.setBadgeText({ text: _tabs.toString() });
-        chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
-
-        // chrome.runtime.sendMessage({
-        //     action: "updateData",
-        //     tabs: _tabs,
-        //     incognito_tabs: _incognito_tabs
-        // });
+        chrome.storage.local.set({
+            tabs: _tabs,
+            incognito_tabs: _incognito_tabs
+        });
     })
+
+    // chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
+
+    //     const _tabs = (data.tabs || 0) - 1;
+    //     const _incognito_tabs = (data.incognito_tabs || 0) - (removeInfo.incognito ? 1 : 0);
+
+    //     chrome.action.setBadgeText({ text: _tabs.toString() });
+    //     chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
+
+    //     // chrome.runtime.sendMessage({
+    //     //     action: "updateData",
+    //     //     tabs: _tabs,
+    //     //     incognito_tabs: _incognito_tabs
+    //     // });
+    // })
 });
 
 
