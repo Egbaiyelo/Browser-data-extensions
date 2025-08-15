@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "Booky-Marky",
+    "version": "0.1",
+    "description": "",
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "action": {
+        "default_icon": {
+            "16": "icons/bookmark.svg",
+            "48": "icons/bookmark.svg",
+            "128": "icons/bookmark.svg"
+        }
+    },
+    "permissions": [
+        "scripting",
+        "activeTab",
+        "bookmarks",
+        "tabs"
+    ],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+    ]
+}
