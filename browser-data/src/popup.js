@@ -12,4 +12,23 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const settings = document.querySelector('nav');
+
+    const settings_page = document.getElementById('settings_page');
+    const main_page = document.getElementById('main_page');
+
+    const settings_button = document.getElementById('settings_button');
+    const back_button = document.getElementById('back_button');
+
+    back_button.addEventListener('click', () => {
+        settings_page.style.display = 'none';
+        main_page.style.display = 'block';
+    });
+
+    settings_button.addEventListener('click', () => {
+        settings_page.style.display = 'block';
+        main_page.style.display = 'none';
+    });
+});
 
