@@ -2,7 +2,7 @@
     "name": "Browser-data",
     "description": "Get Browser data like tab and window counts, history and memory",
     "manifest_version": 3,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "background": {
         "service_worker": "background.js"
     },

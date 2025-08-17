@@ -23,8 +23,7 @@ async function getData() {
     const tabs = await new Promise(resolve => chrome.tabs.query({}, resolve));
     data.tabs = tabs.length;
     data.incognito_tabs = tabs.filter(tab => tab.incognito).length;
-    data.inactive_tabs = tabs.filter(tab => !tab.active).length;
-    console.log(data.inactive_tabs);
+    data.inactive_tabs = tabs.filter(tab => tab.discarded).length;
     // Set Badge
     chrome.action.setBadgeText({ text: data.tabs.toString() });
 
