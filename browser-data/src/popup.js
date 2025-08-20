@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     back_button.addEventListener('click', () => {
         settings_page.style.display = 'none';
         main_page.style.display = 'block';
-    });
+    }); 
+    // 
 
     settings_button.addEventListener('click', () => {
         settings_page.style.display = 'block';
