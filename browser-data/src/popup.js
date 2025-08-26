@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     settings_button.addEventListener('click', () => {
         settings_page.style.display = 'block';
-        main_page.style.display = 'none';
+        main_page.style.display  = 'none';
     });
 });
 
