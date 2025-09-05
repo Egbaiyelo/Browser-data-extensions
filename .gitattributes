@@ -2,7 +2,16 @@
 * text=auto
 
 
-/** export-ignore
+### Export -ignores
+bookmark-productivity/ export-ignore
+bookmark-productivity/** export-ignore
 
-# Released sub folder   
-!/browser-data/*
+# browser-data/src/ export-ignore
+browser-data/TODO.md export-ignore
+
+*.zip export-ignore
+# README.md export-ignore
+
+.gitattributes export-ignore
+.gitignore export-ignore
+
