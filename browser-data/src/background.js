@@ -1,5 +1,5 @@
 
-chrome.action.setBadgeBackgroundColor({ color: '#eef119ff' });
+
 let data = {
     windows: 0,
     tabs: 0,
@@ -31,7 +31,7 @@ async function getData() {
     // Handle current window
     const currentWindow = await new Promise(resolve => chrome.windows.getLastFocused({ populate: true }, resolve));
     data.current_window_tabs = currentWindow?.tabs?.length || 0;
-    console.log("current window",currentWindow, )
+    console.log("current window", currentWindow,)
 
 
     // Handle bookmarks
@@ -85,6 +85,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         })
         return true;
     }
+    if (message.action === "setBadgeTextColor") {
+        chrome.action.setBadgeTextColor({ color: message.color });
+    } else if (message.action === "setBadgeBgColor") {
+        chrome.action.setBadgeBackgroundColor({ color: message.color });
+    }
 });
 // On browser startup
 chrome.runtime.onStartup.addListener(() => {
@@ -93,6 +98,10 @@ chrome.runtime.onStartup.addListener(() => {
 // On install
 chrome.runtime.onInstalled.addListener(() => {
     getData(); // sets badge
+
+    chrome.action.setBadgeBackgroundColor({ color: '"#eef119ff"' });
+    chrome.action.setBadgeTextColor({ color: '#000000' });
+    chrome.storage.sync.set({ badgeBgColor: "#eef119ff", badgeTextColor: "#000000"  });
 });
 // 
 chrome.action.onClicked.addListener(() => {
@@ -133,7 +142,7 @@ chrome.tabs.onCreated.addListener((tab) => {
 
 // Update tabs remove
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-        chrome.tabs.query({}, (tabs) => {
+    chrome.tabs.query({}, (tabs) => {
         const _tabs = tabs.length;
         const _incognito_tabs = tabs.filter(t => t.incognito).length;
 

@@ -24,12 +24,38 @@ document.addEventListener('DOMContentLoaded', () => {
     back_button.addEventListener('click', () => {
         settings_page.style.display = 'none';
         main_page.style.display = 'block';
-    }); 
+    });
     // 
 
     settings_button.addEventListener('click', () => {
         settings_page.style.display = 'block';
-        main_page.style.display  = 'none';
+        main_page.style.display = 'none';
     });
 });
 
+const badgeTextColor = document.getElementById('badgeTextColor');
+const badgeBgColor = document.getElementById('badgeBgColor');
+
+window.addEventListener('load', () => {
+    chrome.storage.sync.get(['badgeTextColor', 'badgeBgColor'], (result) => {
+        if (result.badgeTextColor) {
+            badgeTextColor.value = result.badgeTextColor;
+        }
+        if (result.badgeBgColor) {
+            badgeBgColor.value = result.badgeBgColor;
+        }
+    });
+});
+
+badgeTextColor.addEventListener('change', () => {
+    console.log("hello")
+    const newColor = badgeTextColor.value;
+    chrome.runtime.sendMessage({ action: "setBadgeTextColor", color: newColor });
+    chrome.storage.sync.set({ badgeTextColor: newColor });
+});
+
+badgeBgColor.addEventListener('change', () => {
+    const newColor = badgeBgColor.value;
+    chrome.runtime.sendMessage({ action: "setBadgeBgColor", color: newColor });
+    chrome.storage.sync.set({ badgeBgColor: newColor });
+});
