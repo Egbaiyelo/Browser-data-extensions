@@ -1,3 +1,10 @@
+
+let badgeTextColor;
+let badgeBgColor;
+let allElements;
+let listing;
+
+
 chrome.runtime.sendMessage({ action: "getData" }, (response) => {
     if (chrome.runtime.lastError) {
         console.error("Message failed:", chrome.runtime.lastError);
@@ -13,6 +20,27 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- ---
+    badgeTextColor = document.getElementById('badgeTextColor');
+    badgeBgColor = document.getElementById('badgeBgColor');
+    chrome.runtime.sendMessage({ action: "log", log: "badgetext color again", content: badgeTextColor.value });
+
+    badgeTextColor.addEventListener('change', () => {
+        chrome.runtime.sendMessage({ action: "log", log: "badgetext color chnage", content: badgeTextColor.value });
+        const newColor = badgeTextColor.value;
+        chrome.runtime.sendMessage({ action: "setBadgeTextColor", color: newColor });
+        chrome.storage.sync.set({ badgeTextColor: newColor });
+    });
+
+    badgeBgColor.addEventListener('change', () => {
+        const newColor = badgeBgColor.value;
+        chrome.runtime.sendMessage({ action: "setBadgeBgColor", color: newColor });
+        chrome.storage.sync.set({ badgeBgColor: newColor });
+    });
+
+
+    // --- ---
     const settings = document.querySelector('nav');
 
     const settings_page = document.getElementById('settings_page');
@@ -33,8 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-const badgeTextColor = document.getElementById('badgeTextColor');
-const badgeBgColor = document.getElementById('badgeBgColor');
 
 window.addEventListener('load', () => {
     chrome.storage.sync.get(['badgeTextColor', 'badgeBgColor'], (result) => {
@@ -47,15 +73,3 @@ window.addEventListener('load', () => {
     });
 });
 
-badgeTextColor.addEventListener('change', () => {
-    console.log("hello")
-    const newColor = badgeTextColor.value;
-    chrome.runtime.sendMessage({ action: "setBadgeTextColor", color: newColor });
-    chrome.storage.sync.set({ badgeTextColor: newColor });
-});
-
-badgeBgColor.addEventListener('change', () => {
-    const newColor = badgeBgColor.value;
-    chrome.runtime.sendMessage({ action: "setBadgeBgColor", color: newColor });
-    chrome.storage.sync.set({ badgeBgColor: newColor });
-});

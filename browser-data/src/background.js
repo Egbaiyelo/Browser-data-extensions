@@ -31,7 +31,7 @@ async function getData() {
     // Handle current window
     const currentWindow = await new Promise(resolve => chrome.windows.getLastFocused({ populate: true }, resolve));
     data.current_window_tabs = currentWindow?.tabs?.length || 0;
-    console.log("current window", currentWindow,)
+    // console.log("current window", currentWindow,)
 
 
     // Handle bookmarks
@@ -63,9 +63,9 @@ async function getData() {
         }
     });
 
-    console.log(`Visited domains today: ${visitedDomains.size}`);
-    console.log(Array.from(visitedDomains));
-    console.log(Array.from(historyItems));
+    // console.log(`Visited domains today: ${visitedDomains.size}`);
+    // console.log(Array.from(visitedDomains));
+    // console.log(Array.from(historyItems));
 
     chrome.storage.local.set(data);
     return data;
@@ -87,8 +87,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     if (message.action === "setBadgeTextColor") {
         chrome.action.setBadgeTextColor({ color: message.color });
-    } else if (message.action === "setBadgeBgColor") {
+    }
+    if (message.action === "setBadgeBgColor") {
         chrome.action.setBadgeBackgroundColor({ color: message.color });
+    }
+    if (message.action === "log") {
+        console.log(message.log);
+        console.log(message.content);
     }
 });
 // On browser startup
@@ -99,9 +104,9 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.runtime.onInstalled.addListener(() => {
     getData(); // sets badge
 
-    chrome.action.setBadgeBackgroundColor({ color: '"#eef119ff"' });
+    chrome.action.setBadgeBackgroundColor({ color: '"#FFFF00"' });
     chrome.action.setBadgeTextColor({ color: '#000000' });
-    chrome.storage.sync.set({ badgeBgColor: "#eef119ff", badgeTextColor: "#000000"  });
+    chrome.storage.sync.set({ badgeBgColor: "#FFFF00", badgeTextColor: "#000000"  });
 });
 // 
 chrome.action.onClicked.addListener(() => {
