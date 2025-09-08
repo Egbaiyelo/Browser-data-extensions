@@ -128,6 +128,8 @@ chrome.tabs.onCreated.addListener((tab) => {
         });
     })
 
+    chrome.storage.local.set({tab.title: })
+
     // Initially I used the local storage to reduce the amount of work needed to 
     // handle new tabs but it just results in race conditions
     // chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
