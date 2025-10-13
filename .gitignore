@@ -1,4 +1,5 @@
 
-
+# Temp and working files
 *.temp.*
 *.ps1
+*.zip
