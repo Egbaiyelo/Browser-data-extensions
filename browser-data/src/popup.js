@@ -16,10 +16,27 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
         document.querySelector("#incognito_windows strong").textContent = `${response.incognito_windows}`;
         document.querySelector("#current_window_tabs strong").textContent = `${response.current_window_tabs}`;
         document.querySelector("#bookmarks strong").textContent = `${response.bookmarks}`;
-        
 
-        document.querySelector("#tab_age").textContent = `${getLife()}`;
+        // console.log("tab id", getCurrentTabId())
+        // document.querySelector("#tab_age").textContent = `${getLife(chrome.local.storage.get(getCurrentTabId()))}`;
 
+        // console.log("time is",getLastAccessedTime())
+        (async function() {
+            let tabAccessed = await getLastAccessedTime();
+            console.log("tabby access", tabAccessed);
+            document.querySelector("#tab_age").textContent = `${await getLastAccessedTime()}`;
+        })()
+
+        // Get last accessed time
+        (async function() {
+            try {
+                let tabAccessed = await getLastAccessedTime();
+                document.querySelector("#tab_age").textContent = tabAccessed;
+            } catch (error) {
+                console.error("Failed to update tab age:", error);
+                document.querySelector("#tab_age").textContent = "(Can't find)";
+            }
+        })()
     }
 });
 
@@ -81,9 +98,39 @@ window.addEventListener('load', () => {
 
 
 // Functions
-function getLife(start){
+
+/**
+ * 
+ * @param {*} start 
+ * @returns 
+ */
+function getLife(start) {
     const date = new Date();
     const age = date.getTime() - start;
 
     return new Date(age);
+}
+
+/**
+ * 
+ * @returns 
+ */
+async function getCurrentTabId() {
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    console.log("tab___________", tab)
+    let tryu = new Date(tab.lastAccessed)
+    console.log(tryu.toISOString())
+    return tab.id;
+}
+
+
+/** Temporary overide with last accessed */
+
+/**
+ * 
+ * @returns 
+ */
+async function getLastAccessedTime() {
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    return new Date(tab.lastAccessed).toISOString();
 }

@@ -137,6 +137,8 @@ chrome.tabs.onCreated.addListener((tab) => {
 
     // Get tab age
     let createdTabID;
+
+    // Get the ID of the mostr recently created tab (hopefully)
     (async function () {
         let tabs = await chrome.tabs.query({ lastFocusedWindow: true });
 
@@ -146,9 +148,11 @@ chrome.tabs.onCreated.addListener((tab) => {
             createdTabID = tabs[0].id; 
         } 
     })()
+
     const now = new Date();
     if (createdTabID)
         chrome.storage.local.set({createdTabID: now.gettime()});
+
 
     // Initially I used the local storage to reduce the amount of work needed to 
     // handle new tabs but it just results in race conditions
