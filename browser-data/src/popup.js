@@ -16,6 +16,10 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
         document.querySelector("#incognito_windows strong").textContent = `${response.incognito_windows}`;
         document.querySelector("#current_window_tabs strong").textContent = `${response.current_window_tabs}`;
         document.querySelector("#bookmarks strong").textContent = `${response.bookmarks}`;
+        
+
+        document.querySelector("#tab_age").textContent = `${getLife()}`;
+
     }
 });
 
@@ -73,3 +77,13 @@ window.addEventListener('load', () => {
     });
 });
 
+
+
+
+// Functions
+function getLife(start){
+    const date = new Date();
+    const age = date.getTime() - start;
+
+    return new Date(age);
+}

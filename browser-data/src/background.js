@@ -47,6 +47,13 @@ async function getData() {
     data.bookmarks = count;
 
 
+    // Get tab title 
+    let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (tab) {
+
+    }
+
+
     // Get history from last 24 hours
     const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
     const historyItems = await new Promise(resolve =>
@@ -106,7 +113,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
     chrome.action.setBadgeBackgroundColor({ color: '"#FFFF00"' });
     chrome.action.setBadgeTextColor({ color: '#000000' });
-    chrome.storage.sync.set({ badgeBgColor: "#FFFF00", badgeTextColor: "#000000"  });
+    chrome.storage.sync.set({ badgeBgColor: "#FFFF00", badgeTextColor: "#000000" });
 });
 // 
 chrome.action.onClicked.addListener(() => {
@@ -128,7 +135,20 @@ chrome.tabs.onCreated.addListener((tab) => {
         });
     })
 
-    chrome.storage.local.set({tab.title: })
+    // Get tab age
+    let createdTabID;
+    (async function () {
+        let tabs = await chrome.tabs.query({ lastFocusedWindow: true });
+
+        if (tabs.length > 0) {
+            // sort tabs by ID to get highest (most recent) tab
+            tabs.sort((a, b) => b.id - a.id);
+            createdTabID = tabs[0].id; 
+        } 
+    })()
+    const now = new Date();
+    if (createdTabID)
+        chrome.storage.local.set({createdTabID: now.gettime()});
 
     // Initially I used the local storage to reduce the amount of work needed to 
     // handle new tabs but it just results in race conditions
