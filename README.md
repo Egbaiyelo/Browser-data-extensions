@@ -25,15 +25,15 @@ It provides data like how long a tab has been open so you know what to *bookmark
 - Gets time spent on current tab 
 - Focus sessions/time spent on specific domains
 
-## ⬇️ Instalation
+## ⬇️ Installation
 This isn't available on the extension store yet so,
 
 1. Download the `Browser-data/src` folder, 
-2. Go to [chrome://extensions](chrome://extensions) and go to developer mode. <!-- only for chrome but maybe edge and firefox too -->
+2. Go to [chrome://extensions](chrome://extensions) | [edge://extensions](edge://extensions) and go to developer mode. <!-- only for chrome but maybe edge and firefox too -->
 3. Click `Load unpacked` and select the extension folder. <!-- Maybe add image? -->
 4. Get insights on browser productivity data.
 
-![Chrome extensions page](./chrome-extensions-page.png)
+![Chrome extensions page](./browser-data/img/chrome-extensions-page.png)
 
 
 ## Future updates

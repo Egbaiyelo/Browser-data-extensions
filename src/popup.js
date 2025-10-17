@@ -45,10 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ---
     badgeTextColor = document.getElementById('badgeTextColor');
     badgeBgColor = document.getElementById('badgeBgColor');
+
+    
+
     chrome.runtime.sendMessage({ action: "log", log: "badgetext color again", content: badgeTextColor.value });
 
     badgeTextColor.addEventListener('change', () => {
-        chrome.runtime.sendMessage({ action: "log", log: "badgetext color chnage", content: badgeTextColor.value });
+        chrome.runtime.sendMessage({ action: "log", log: "badgetext color change", content: badgeTextColor.value });
         const newColor = badgeTextColor.value;
         chrome.runtime.sendMessage({ action: "setBadgeTextColor", color: newColor });
         chrome.storage.sync.set({ badgeTextColor: newColor });

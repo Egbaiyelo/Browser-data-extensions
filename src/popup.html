@@ -15,6 +15,7 @@
             padding: 6px;
             width: 27.5em;
             height: 35em;
+            color: #333;;
         }
 
         h2 {
@@ -86,9 +87,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0;
         }
 
         label {
+            font-size: small;
             font-weight: bold;
             flex-grow: 1;
         }
@@ -98,7 +101,20 @@
             height: 40px;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            padding: none;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+        }
+
+        input[type="color"]::-moz-color-swatch {
+            border: none;
         }
     </style>
 
@@ -116,14 +132,46 @@
 
     <!-- Settings page -->
     <div id="settings_page" style="display: none;">
-        <div class="color-picker-group">
-            <label for="badgeBgColor">Badge Background Color:</label>
-            <input type="color" id="badgeBgColor">
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <span class="color-picker-group">
+                <label for="badgeBgColor">Bkg Color</label>
+                <input type="color" id="badgeBgColor" value="" style="border-radius: 1.5em 0 0 1.5em;">
+            </span>
+            <span class="color-picker-group">
+                <input type="color" id="badgeTextColor" value="" style="border-radius: 0 1.5em 1.5em 0;">
+                <label for="badgeTextColor">Text Color</label>
+            </span>
         </div>
-        <div class="color-picker-group">
-            <label for="badgeTextColor">Badge Text Color:</label>
-            <input type="color" id="badgeTextColor">
-        </div>
+        <!-- <div>
+            Preset Colors
+            <div
+                style="display: flex; flex-direction: column; gap: 10px; font-family: monospace; color: white; font-weight: bold;">
+
+                <div style="display: flex; gap: 10px;">
+                    <div class="prst-cl" style="background-color: #FFFFFA; color: #515052; padding: 20px; flex: 1; text-align: center;">
+                        FFFFFA</div>
+                    <div class="prst-cl" style="background-color: #515052; padding: 20px; flex: 1; text-align: center;">515052</div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div class="prst-cl" style="background-color: #A9DDD6; color: #1A181B; padding: 20px; flex: 1; text-align: center;">
+                        A9DDD6</div>
+                    <div class="prst-cl" style="background-color: #1A181B; padding: 20px; flex: 1; text-align: center;">1A181B</div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div class="prst-cl" style="background-color: #FDE74C; color: #27213C; padding: 20px; flex: 1; text-align: center;">
+                        FDE74C</div>
+                    <div class="prst-cl" style="background-color: #27213C; padding: 20px; flex: 1; text-align: center;">27213C</div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div class="prst-cl" style="background-color: #EF6461; padding: 20px; flex: 1; text-align: center;">07004D</div>
+                    <div class="prst-cl" style="background-color: #07004D; padding: 20px; flex: 1; text-align: center;">EF6461</div>
+                </div>
+
+            </div>
+        </div> -->
     </div>
 
     <!-- Main page -->
