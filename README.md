@@ -28,10 +28,13 @@ It provides data like how long a tab has been open so you know what to *bookmark
 ## ⬇️ Installation
 This isn't available on the extension store yet so,
 
-1. Download the `Browser-data/src` folder, 
+### For personal use 
+
+
+### For development
+1. Download the `/src` folder, 
 2. Go to [chrome://extensions](chrome://extensions) | [edge://extensions](edge://extensions) and go to developer mode. <!-- only for chrome but maybe edge and firefox too -->
 3. Click `Load unpacked` and select the extension folder. <!-- Maybe add image? -->
-4. Get insights on browser productivity data.
 
 ![Chrome extensions page](./browser-data/img/chrome-extensions-page.png)
 
@@ -39,11 +42,11 @@ This isn't available on the extension store yet so,
 ## Future updates
 - Open to more browsers
 - Bookmark folder breakdown
-- Tab grouping insights -> (each group and number of tabs, age)
+- Tab grouping insights -> (each group and number of tabs) ?
 - Fix colouring
 
 
 ## Reasoning
-The extension is an effort to force myself to understand chrome apis and cross browser functionality by using other contexts.
+The extension is an effort to understand chrome apis and cross browser functionality by using other contexts.
 
 I also wish to maybe publish it and get a little manageable application on the market to watch it and handle its real-world management and testing.
