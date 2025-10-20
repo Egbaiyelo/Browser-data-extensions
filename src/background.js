@@ -53,27 +53,6 @@ async function getData() {
 
     }
 
-
-    // Get history from last 24 hours
-    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
-    const historyItems = await new Promise(resolve =>
-        chrome.history.search({ text: "", startTime: oneDayAgo, maxResults: 10000 }, resolve)
-    );
-
-    const visitedDomains = new Set();
-    historyItems.forEach(entry => {
-        try {
-            const url = new URL(entry.url);
-            visitedDomains.add(url.hostname);
-        } catch (e) {
-            console.warn("Invalid URL skipped:", entry.url);
-        }
-    });
-
-    // console.log(`Visited domains today: ${visitedDomains.size}`);
-    // console.log(Array.from(visitedDomains));
-    // console.log(Array.from(historyItems));
-
     chrome.storage.local.set(data);
     return data;
 }
@@ -83,7 +62,7 @@ async function getData() {
 getData();
 
 
-//--- Subscribing listeners ---
+// --- Subscribing listeners ---
 // On popup message
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action == "getData") {
@@ -92,33 +71,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         })
         return true;
     }
-    if (message.action === "setBadgeTextColor") {
-        chrome.action.setBadgeTextColor({ color: message.color });
-    }
-    if (message.action === "setBadgeBgColor") {
-        chrome.action.setBadgeBackgroundColor({ color: message.color });
+    if (message.action === "updateSettings") {
+        if (message.type === "badgeBg") chrome.action.setBadgeBackgroundColor({ color: message.color });
+        if (message.type === "badgeText") chrome.action.setBadgeTextColor({ color: message.color });
     }
     if (message.action === "log") {
         console.log(message.log);
         console.log(message.content);
     }
 });
-// On browser startup
-chrome.runtime.onStartup.addListener(() => {
-    getData(); // sets badge
-})
-// On install
-chrome.runtime.onInstalled.addListener(() => {
-    getData(); // sets badge
 
+// On browser startup and install
+chrome.runtime.onStartup.addListener(getData) // sets badge
+chrome.runtime.onInstalled.addListener(() => {
+    getData();
+    
     chrome.action.setBadgeBackgroundColor({ color: '"#FFFF00"' });
     chrome.action.setBadgeTextColor({ color: '#000000' });
     chrome.storage.sync.set({ badgeBgColor: "#FFFF00", badgeTextColor: "#000000" });
 });
 // 
-chrome.action.onClicked.addListener(() => {
-    getData();
-});
+chrome.action.onClicked.addListener(getData);
 
 
 // --- Listening for badge changes ---
@@ -145,30 +118,14 @@ chrome.tabs.onCreated.addListener((tab) => {
         if (tabs.length > 0) {
             // sort tabs by ID to get highest (most recent) tab
             tabs.sort((a, b) => b.id - a.id);
-            createdTabID = tabs[0].id; 
-        } 
+            createdTabID = tabs[0].id;
+        }
     })()
 
     const now = new Date();
     if (createdTabID)
-        chrome.storage.local.set({createdTabID: now.gettime()});
+        chrome.storage.local.set({ createdTabID: now.gettime() });
 
-
-    // Initially I used the local storage to reduce the amount of work needed to 
-    // handle new tabs but it just results in race conditions
-    // chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
-    //     const _tabs = (data.tabs || 0) + 1;
-    //     const _incognito_tabs = (data.incognito_tabs || 0) + (tab.incognito ? 1 : 0);
-    //     // No need to check for incognito or inactive, jsut for badge changes
-    //     chrome.action.setBadgeText({ text: _tabs.toString() });
-    //     chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
-
-    //     // chrome.runtime.sendMessage({
-    //     //     action: "updateData",
-    //     //     tabs: _tabs,
-    //     //     incognito_tabs: _incognito_tabs
-    //     // });
-    // });
 });
 
 // Update tabs remove
@@ -183,47 +140,27 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
             incognito_tabs: _incognito_tabs
         });
     })
-
-    // chrome.storage.local.get(["tabs", "incognito_tabs"], (data) => {
-
-    //     const _tabs = (data.tabs || 0) - 1;
-    //     const _incognito_tabs = (data.incognito_tabs || 0) - (removeInfo.incognito ? 1 : 0);
-
-    //     chrome.action.setBadgeText({ text: _tabs.toString() });
-    //     chrome.storage.local.set({ tabs: _tabs, incognito_tabs: _incognito_tabs });
-
-    //     // chrome.runtime.sendMessage({
-    //     //     action: "updateData",
-    //     //     tabs: _tabs,
-    //     //     incognito_tabs: _incognito_tabs
-    //     // });
-    // })
 });
 
 
-// counts everything anyway?
-// Update window count
-// chrome.windows.onCreated.addListener((window) => {
-//     data.windows += 1;
-//     if (window.incognito) data.incognito_windows += 1;
 
-//     chrome.runtime.sendMessage({
-//         action: "updateData",
-//         windows: data.windows,
-//         incognito_windows: data.incognito_windows
-//     });
-// });
 
-// update window removed
-// chrome.windows.onRemoved.addListener((windowId) => {
-//     chrome.windows.getAll({}, (windows) => {
-//         data.windows = windows.length;
-//         data.incognito_windows = windows.filter(win => win.incognito).length;
+// Get history from last 24 hours
+    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    const historyItems = await new Promise(resolve =>
+        chrome.history.search({ text: "", startTime: oneDayAgo, maxResults: 10000 }, resolve)
+    );
 
-//         chrome.runtime.sendMessage({
-//             action: "updateData",
-//             windows: data.windows,
-//             incognito_windows: data.incognito_windows
-//         });
-//     });
-// });
+    const visitedDomains = new Set();
+    historyItems.forEach(entry => {
+        try {
+            const url = new URL(entry.url);
+            visitedDomains.add(url.hostname);
+        } catch (e) {
+            console.warn("Invalid URL skipped:", entry.url);
+        }
+    });
+
+    // console.log(`Visited domains today: ${visitedDomains.size}`);
+    // console.log(Array.from(visitedDomains));
+    // console.log(Array.from(historyItems));

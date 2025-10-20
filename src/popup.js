@@ -53,13 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
     badgeTextColor.addEventListener('change', () => {
         chrome.runtime.sendMessage({ action: "log", log: "badgetext color change", content: badgeTextColor.value });
         const newColor = badgeTextColor.value;
-        chrome.runtime.sendMessage({ action: "setBadgeTextColor", color: newColor });
+        chrome.runtime.sendMessage({ action: "updateSettings", type:"badgeText", color: newColor });
         chrome.storage.sync.set({ badgeTextColor: newColor });
     });
 
     badgeBgColor.addEventListener('change', () => {
         const newColor = badgeBgColor.value;
-        chrome.runtime.sendMessage({ action: "setBadgeBgColor", color: newColor });
+        chrome.runtime.sendMessage({ action: "updateSettings", type:"badgeBg", color: newColor });
         chrome.storage.sync.set({ badgeBgColor: newColor });
     });
 
