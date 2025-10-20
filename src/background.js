@@ -14,38 +14,24 @@ let data = {
 async function getData() {
 
     // Handle windows
-    const windows = await new Promise(resolve => chrome.windows.getAll({}, resolve));
-    data.windows = windows.length;
-    data.incognito_windows = windows.filter(win => win.incognito).length;
+    const allWindows = await chrome.windows.getAll({populate: false});
+    data.windows = allWindows.length;
+    data.incognito_windows = allWindows.filter(win => win.incognito).length;
 
 
     // Handle tabs
-    const tabs = await new Promise(resolve => chrome.tabs.query({}, resolve));
-    data.tabs = tabs.length;
-    data.incognito_tabs = tabs.filter(tab => tab.incognito).length;
-    data.inactive_tabs = tabs.filter(tab => tab.discarded).length;
+    const allTabs = await chrome.tabs.query({});
+    console.log(allTabs)
+    data.tabs = allTabs.length;
+    data.incognito_tabs = allTabs.filter(tab => tab.incognito).length;
+    data.inactive_tabs = allTabs.filter(tab => tab.discarded).length;
     // Set Badge
     chrome.action.setBadgeText({ text: data.tabs.toString() });
 
 
     // Handle current window
-    const currentWindow = await new Promise(resolve => chrome.windows.getLastFocused({ populate: true }, resolve));
+    const currentWindow = await chrome.windows.getLastFocused({ populate: true});
     data.current_window_tabs = currentWindow?.tabs?.length || 0;
-    // console.log("current window", currentWindow,)
-
-
-    // Handle bookmarks
-    // const bookmarkTreeNodes = await new Promise(resolve => chrome.bookmarks.getTree(resolve));
-    // let count = 0;
-    // function countBookmarks(nodes) {
-    //     nodes.forEach(node => {
-    //         if (node.url) count++;
-    //         if (node.children) countBookmarks(node.children);
-    //     });
-    // }
-    // countBookmarks(bookmarkTreeNodes);
-    // data.bookmarks = count;
-
 
     // Get tab title 
     let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
@@ -53,91 +39,33 @@ async function getData() {
 
     }
 
-    chrome.storage.local.set(data);
+    await chrome.storage.local.set(data);
     return data;
 }
 
+async function getOtherData(){
+    // Handle bookmarks
+    const tree = await chrome.bookmarks.getTree();
+    let count = 0;
+    const countNodes = (nodes) => {
+        nodes.forEach(n => {
+            if (n.url) count++;
+            if (n.children) countNodes(n.children);
+        });
+    };
+    countNodes(tree);
+    await chrome.storage.local.set({ bookmarks: count });
+    data.bookmarks = count;
+}
 
-// To run on service worker load
+// To run when service worker loads
 getData();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// --- Listening for badge changes ---
-// Update tabs
-chrome.tabs.onCreated.addListener((tab) => {
-    chrome.tabs.query({}, (tabs) => {
-        const _tabs = tabs.length;
-        const _incognito_tabs = tabs.filter(t => t.incognito).length;
-
-        chrome.action.setBadgeText({ text: _tabs.toString() });
-        chrome.storage.local.set({
-            tabs: _tabs,
-            incognito_tabs: _incognito_tabs
-        });
-    })
-
-    // Get tab age
-    let createdTabID;
-
-    // Get the ID of the mostr recently created tab (hopefully)
-    (async function () {
-        let tabs = await chrome.tabs.query({ lastFocusedWindow: true });
-
-        if (tabs.length > 0) {
-            // sort tabs by ID to get highest (most recent) tab
-            tabs.sort((a, b) => b.id - a.id);
-            createdTabID = tabs[0].id;
-        }
-    })()
-
-    const now = new Date();
-    if (createdTabID)
-        chrome.storage.local.set({ createdTabID: now.gettime() });
-
-});
-
-// Update tabs remove
-chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-    chrome.tabs.query({}, (tabs) => {
-        const _tabs = tabs.length;
-        const _incognito_tabs = tabs.filter(t => t.incognito).length;
-
-        chrome.action.setBadgeText({ text: _tabs.toString() });
-        chrome.storage.local.set({
-            tabs: _tabs,
-            incognito_tabs: _incognito_tabs
-        });
-    })
-});
-
-
-
-
 
 
 
 // ******************
 // *** Subscribing Listeners ***
+
 
 // on browser startup and install
 chrome.runtime.onInstalled.addListener(async () => {
@@ -155,11 +83,41 @@ chrome.runtime.onStartup.addListener(getData);
 chrome.action.onClicked.addListener(getData);
 
 
-// Update data when tabs or windows change
-chrome.tabs.onCreated.addListener(getData);
-chrome.tabs.onRemoved.addListener(getData);
-chrome.windows.onCreated.addListener(getData);
-chrome.windows.onRemoved.addListener(getData);
+// --- Listening for badge changes ---
+// Update tabs
+chrome.tabs.onCreated.addListener( async (tab) => {
+    chrome.tabs.query({}, (tabs) => {
+        const _tabs = tabs.length;
+        const _incognito_tabs = tabs.filter(t => t.incognito).length;
+
+        chrome.action.setBadgeText({ text: _tabs.toString() });
+        chrome.storage.local.set({
+            tabs: _tabs,
+            incognito_tabs: _incognito_tabs
+        });
+    })
+
+    // Getting tab age
+    const tabKey = `age_${tab.id}`;
+    await chrome.storage.local.set({ [tabKey]: Date.now() });
+});
+
+// Update tabs remove
+chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+    chrome.tabs.query({}, (tabs) => {
+        const _tabs = tabs.length;
+        const _incognito_tabs = tabs.filter(t => t.incognito).length;
+
+        chrome.action.setBadgeText({ text: _tabs.toString() });
+        chrome.storage.local.set({
+            tabs: _tabs,
+            incognito_tabs: _incognito_tabs
+        });
+
+    })
+    await chrome.storage.local.remove(`age_${tabId}`);
+});
+
 
 // Handling messages from Popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -175,24 +133,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // update bookmarks
-// chrome.bookmarks.onCreated.addListener(updateHeavyStats);
-// chrome.bookmarks.onRemoved.addListener(updateHeavyStats);
+// chrome.bookmarks.onCreated.addListener(updateOtherData);
+// chrome.bookmarks.onRemoved.addListener(updateOtherData);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// ***************************************************88888
 
 
 
