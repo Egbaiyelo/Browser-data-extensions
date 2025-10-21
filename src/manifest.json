@@ -2,16 +2,31 @@
     "name": "Browser-data-dev",
     "description": "Get Browser data like tab and window counts, history and memory",
     "manifest_version": 3,
-    "version": "0.2.0",
+    "version": "0.3.0",
+    "author": "Egbaiyelo Moteniola",
     "background": {
         "service_worker": "background.js"
     },
+    "icons": {
+        "16": "icons/browser.png",
+        "48": "icons/browser.png",
+        "128": "icons/browser.png"
+    },
     "action": {
+        "default_title": "View Browser Data",
         "default_icon": {
             "16": "icons/browser.png",
             "48": "icons/browser.png"
-        }, 
+        },
         "default_popup": "popup.html"
     },
-    "permissions": ["bookmarks", "history", "storage"]
+    "permissions": [
+        "storage",
+        "tabs",
+        "bookmarks"
+    ],
+    "optional_permissions": [
+        "history"
+    ],
+    "offline_enabled": true
 }
