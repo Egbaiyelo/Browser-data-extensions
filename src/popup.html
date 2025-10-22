@@ -78,11 +78,6 @@
             margin-bottom: .75em;
         }
 
-        /* strong {
-            font-size: large;
-            display: block;
-        } */
-
         .color-picker-group {
             margin: 1.5em 0;
             display: flex;
@@ -117,22 +112,34 @@
         input[type="color"]::-moz-color-swatch {
             border: none;
         }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #settings_page {
+            display: none;
+        }
     </style>
 
 </head>
 
 <body>
-    <h2>Browser Data</h2>
-    <nav style="display: flex; justify-content: space-between;">
-        <button id="back_button"><img width="15em" height="15em" src="icons/back-svgrepo-com.png" alt="back"></button>
-        <button id="settings_button"><img width="15em" height="15em" src="icons/settings-svgrepo-com (1).png"
-                alt="settings"></button>
-    </nav>
+    <header>
+        <h2>Browser Data</h2>
+        <nav>
+            <button id="back_button"><img width="15em" height="15em" src="icons/back-svgrepo-com.png"
+                    alt="back"></button>
+            <button id="settings_button"><img width="15em" height="15em" src="icons/settings-svgrepo-com (1).png"
+                    alt="settings"></button>
+        </nav>
+    </header>
 
     <!-- will probably add the icon blend thingy and deactivate the buttons in style update -->
 
     <!-- Settings page -->
-    <div id="settings_page" style="display: none;">
+    <div id="settings_page">
         <div style="display: flex; align-items: center; justify-content: center;">
             <span class="color-picker-group">
                 <label for="badgeBgColor">Bkg Color</label>

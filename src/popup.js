@@ -21,22 +21,23 @@ chrome.runtime.sendMessage({ action: "getData" }, (response) => {
         // document.querySelector("#tab_age").textContent = `${getLife(chrome.local.storage.get(getCurrentTabId()))}`;
 
         // console.log("time is",getLastAccessedTime())
-        (async function() {
+        (async function () {
             let tabAccessed = await getLastAccessedTime();
             console.log("tabby access", tabAccessed);
-            document.querySelector("#tab_age").textContent = `${await getLastAccessedTime()}`;
+            document.querySelector("#tab_age").textContent = `${await getCurrentTabAge()}`;
+            // formerly get last accessed time
         })()
 
-        // Get last accessed time
-        (async function() {
-            try {
-                let tabAccessed = await getLastAccessedTime();
-                document.querySelector("#tab_age").textContent = tabAccessed;
-            } catch (error) {
-                console.error("Failed to update tab age:", error);
-                document.querySelector("#tab_age").textContent = "(Can't find)";
-            }
-        })()
+            // Get last accessed time
+            (async function () {
+                try {
+                    let tabAccessed = await getLastAccessedTime();
+                    document.querySelector("#tab_age").textContent = tabAccessed;
+                } catch (error) {
+                    console.error("Failed to update tab age:", error);
+                    document.querySelector("#tab_age").textContent = "(Can't find)";
+                }
+            })()
     }
 });
 
@@ -46,20 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
     badgeTextColor = document.getElementById('badgeTextColor');
     badgeBgColor = document.getElementById('badgeBgColor');
 
-    
+
 
     chrome.runtime.sendMessage({ action: "log", log: "badgetext color again", content: badgeTextColor.value });
 
     badgeTextColor.addEventListener('change', () => {
         chrome.runtime.sendMessage({ action: "log", log: "badgetext color change", content: badgeTextColor.value });
         const newColor = badgeTextColor.value;
-        chrome.runtime.sendMessage({ action: "updateSettings", type:"badgeText", color: newColor });
+        chrome.runtime.sendMessage({ action: "updateSettings", type: "badgeText", color: newColor });
         chrome.storage.sync.set({ badgeTextColor: newColor });
     });
 
     badgeBgColor.addEventListener('change', () => {
         const newColor = badgeBgColor.value;
-        chrome.runtime.sendMessage({ action: "updateSettings", type:"badgeBg", color: newColor });
+        chrome.runtime.sendMessage({ action: "updateSettings", type: "badgeBg", color: newColor });
         chrome.storage.sync.set({ badgeBgColor: newColor });
     });
 
@@ -100,19 +101,9 @@ window.addEventListener('load', () => {
 
 
 
-// Functions
+// ******************
+// *** Functions ***
 
-/**
- * 
- * @param {*} start 
- * @returns 
- */
-function getLife(start) {
-    const date = new Date();
-    const age = date.getTime() - start;
-
-    return new Date(age);
-}
 
 /**
  * 
@@ -136,4 +127,48 @@ async function getCurrentTabId() {
 async function getLastAccessedTime() {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     return new Date(tab.lastAccessed).toISOString();
+}
+
+
+/**
+ * 
+ * @returns 
+ */
+async function getCurrentTabTimeData() {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const result = await chrome.storage.local.get(`age_${tab.id}`);
+    const startTime = result[`age_${tab.id}`];
+
+    const lastAccessed = tab.lastAccessed;
+
+    if (!startTime) return "Unknown";
+
+    console.log(tab.lastAccessed);
+    chrome.runtime.sendMessage({ action: "log", log: "last accessed", data: tab });
+    return toReadableString(lastAccessed);
+}
+
+/**
+ * 
+ * @param {*} startTime 
+ * @returns 
+ */
+function toReadableString(startTime) {
+    const secsInMin = 60
+    const secsInHour = 60 * 60
+    const secsInDay = 24 * 3600
+
+    const ageInDays = Math.floor((Date.now() - startTime) / (secsInDay * 1000));
+    const ageInHours = Math.floor((Date.now() - startTime) / (secsInHour * 1000));
+    const ageInMinutes = Math.floor((Date.now() - startTime) / (secsInMin * 1000));
+
+    const plural = (val, unit) => `${val} ${unit}${val !== 1 ? 's' : ''}`;
+
+    // return first two
+    if (ageInDays > 0)
+        return `${plural(ageInDays, 'day')}, ${plural(ageInHours, 'hr')} ago`
+    else if (ageInHours > 0)
+        return `${plural(ageInHours, 'hr')}, ${plural(ageInMinutes, 'min')} ago`
+    else
+        return `${plural(ageInMinutes, 'min')} ago`
 }
