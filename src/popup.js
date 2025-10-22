@@ -1,8 +1,4 @@
 
-// let badgeTextColor;
-// let badgeBgColor;
-// let allElements;
-// let listing;
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- ---
@@ -24,7 +20,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const incognito_windows = document.querySelector("#incognito_windows strong")
     const current_window_tabs = document.querySelector("#current_window_tabs strong")
     const bookmarks = document.querySelector("#bookmarks strong")
-    const tab_age = document.querySelector("#tab_age")
+    const tab_age = document.querySelector("#tab_age strong")
+    const tab_last_accessed = document.querySelector('#tab_last_accessed strong')
 
 
     // updating elements
@@ -42,9 +39,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Update Tab Age
         const data = await getCurrentTabTimeData()
-        // chrome.runtime.sendMessage({ action: "log", log: "other", data: await getCurrentTabTimeData()})
-
         tab_age.textContent = data.created;
+        tab_last_accessed.textContent = data.last_accessed
     });
 
 
@@ -103,14 +99,12 @@ async function getCurrentTabTimeData() {
 
     if (!startTime) return {
         "created": "unknown",
-        "last-accessed": "unknown"
+        "last_accessed": "unknown"
     };
 
-    // chrome.runtime.sendMessage({action: "log", log: "something", data: toReadableString(tab.lastAccessed)})
-    // chrome.runtime.sendMessage({ action: "log", log: "last accessed", data: tab.id });
     return {
         "created": toReadableString(startTime),
-        "last-accessed": toReadableString(tab.lastAccessed)
+        "last_accessed": toReadableString(tab.lastAccessed)
     };
 }
 
@@ -120,21 +114,25 @@ async function getCurrentTabTimeData() {
  * @returns 
  */
 function toReadableString(startTime) {
-    const secsInMin = 60
-    const secsInHour = 60 * 60
-    const secsInDay = 24 * 3600
+    const tabAgeMs = Date.now() - startTime
 
-    const ageInDays = Math.floor((Date.now() - startTime) / (secsInDay * 1000));
-    const ageInHours = Math.floor((Date.now() - startTime) / (secsInHour * 1000));
-    const ageInMinutes = Math.floor((Date.now() - startTime) / (secsInMin * 1000));
+    const totalSecs = Math.floor(tabAgeMs / 1000);
+    const totalMins = Math.floor(totalSecs / 60);
+    const totalHours = Math.floor(totalMins / 60);
+    const totalDays = Math.floor(totalHours / 24);
+
+    // remaining time
+    const mins = totalMins % 60;
+    const hours = totalHours % 24;
+    const days = totalDays;
 
     const plural = (val, unit) => `${val} ${unit}${val !== 1 ? 's' : ''}`;
 
     // return first two
-    if (ageInDays > 0)
-        return `${plural(ageInDays, 'day')}, ${plural(ageInHours, 'hr')} ago`
-    else if (ageInHours > 0)
-        return `${plural(ageInHours, 'hr')}, ${plural(ageInMinutes, 'min')} ago`
+    if (days > 0)
+        return `${plural(days, 'day')}, ${plural(hours, 'hr')} ago`
+    else if (hours > 0)
+        return `${plural(hours, 'hr')}, ${plural(mins, 'min')} ago`
     else
-        return `${plural(ageInMinutes, 'min')} ago`
+        return `${plural(mins, 'min')} ago`
 }
