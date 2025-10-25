@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const current_window_tabs = document.querySelector("#current_window_tabs strong")
     const bookmarks = document.querySelector("#bookmarks strong")
     const tab_age = document.querySelector("#tab_age strong")
-    const tab_last_accessed = document.querySelector('#tab_last_accessed strong')
+    // const tab_last_accessed = document.querySelector('#tab_last_accessed strong')
 
 
     // updating elements
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Update Tab Age
         const data = await getCurrentTabTimeData()
         tab_age.textContent = data.created;
-        tab_last_accessed.textContent = data.last_accessed
+        // tab_last_accessed.textContent = data.last_accessed
     });
 
 

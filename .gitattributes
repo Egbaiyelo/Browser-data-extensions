@@ -3,14 +3,11 @@
 
 
 ### Export -ignores
-bookmark-productivity/ export-ignore
-bookmark-productivity/** export-ignore
-
-# browser-data/src/ export-ignore
-browser-data/TODO.md export-ignore
+img/ export-ignore
+# README.md export-ignore
+TODO.md export-ignore
 
 *.zip export-ignore
-# README.md export-ignore
 
 .gitattributes export-ignore
 .gitignore export-ignore
