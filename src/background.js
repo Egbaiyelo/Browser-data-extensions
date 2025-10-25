@@ -130,6 +130,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === "badgeBg") chrome.action.setBadgeBackgroundColor({ color: message.color });
         if (message.type === "badgeText") chrome.action.setBadgeTextColor({ color: message.color });
     }
+
+    // for async logs
+    if (message.action === "log") console.log("--", message.log, message.data);
 });
 
 // update bookmarks
@@ -160,3 +163,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // // console.log(`Visited domains today: ${visitedDomains.size}`);
     // // console.log(Array.from(visitedDomains));
     // // console.log(Array.from(historyItems));
+
+    

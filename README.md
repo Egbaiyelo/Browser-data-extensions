@@ -3,6 +3,12 @@ Browser extension to get relevant data and insights into browsing environment li
 
 It provides data like how long a tab has been open so you know what to *bookmark* or delete
 
+<!-- popup UI image for show -->
+
+## Tech stack
+- **Core:** JavaScript (ES6+), HTML5, CSS3
+- **APIs:** Chrome Extension API (Manifest V3)
+
 ## What it shows
 - Tab count -> Number of tabs ope across all windows
 - Window count -> Number of windows open in browser
@@ -26,18 +32,28 @@ It provides data like how long a tab has been open so you know what to *bookmark
 - Focus sessions/time spent on specific domains
 
 ## ⬇️ Installation
-This isn't available on the extension store yet so,
+Since this extension is currently in development, you can load it locally:
 
 ### For personal use 
-
-
-### For development
-1. Download the `/src` folder, 
-2. Go to [chrome://extensions](chrome://extensions) | [edge://extensions](edge://extensions) and go to developer mode. <!-- only for chrome but maybe edge and firefox too -->
-3. Click `Load unpacked` and select the extension folder. <!-- Maybe add image? -->
+1. Go to the latest release and download the zip
+2. unzip the file and store in a secure folder
+3. Navigate to [chrome://extensions](chrome://extensions) | [edge://extensions](edge://extensions) and enable developer mode (switch in the top right corner).
+3. Click `Load unpacked` and select the extension folder.
 
 ![Chrome extensions page](./browser-data/img/chrome-extensions-page.png)
 
+### For development
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/egbaiyelo/BrD-ext.git
+   ```
+2. Navigate to [chrome://extensions](chrome://extensions) | [edge://extensions](edge://extensions) and enable developer mode (switch in the top right corner).
+3. Click `Load unpacked` and select the src folder from the repo.
+
+
+
+## Architecture
+<!-- It uses background scripts... -->
 
 ## Future updates
 - Open to more browsers

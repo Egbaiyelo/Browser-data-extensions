@@ -1,6 +1,6 @@
 {
     "name": "Browser-data-dev",
-    "description": "Get Browser data like tab and window counts, history and memory",
+    "description": "Get Browser data like tab and window counts, history",
     "manifest_version": 3,
     "version": "0.3.0",
     "author": "Egbaiyelo Moteniola",
