@@ -4,6 +4,13 @@ Browser extension to get relevant data and insights into browsing environment li
 It provides data like how long a tab has been open so you know what to *bookmark* or delete
 
 <!-- popup UI image for show -->
+![Main page](img/main-page.png)
+![Settings page](img/settings-page.png)
+
+## Reasoning
+The extension is an effort to understand chrome apis and cross browser functionality by using other contexts.
+
+I also wish to maybe publish it and get a little manageable application on the market to watch it and handle its real-world management and testing.
 
 ## Tech stack
 - **Core:** JavaScript (ES6+), HTML5, CSS3
@@ -15,6 +22,7 @@ It provides data like how long a tab has been open so you know what to *bookmark
 - Current window tabs count - Number of tabs in the current window
 - Inactive tabs -> Number of inactive tabs
 - Bookmarks -> Total number of saved bookmarks
+- Gets time spent on current tab 
 
 <!-- 
     Inactive tab count
@@ -28,7 +36,6 @@ It provides data like how long a tab has been open so you know what to *bookmark
 
 *Future*
 - Gets most visited sites in a day 
-- Gets time spent on current tab 
 - Focus sessions/time spent on specific domains
 
 ## ⬇️ Installation
@@ -62,7 +69,3 @@ Since this extension is currently in development, you can load it locally:
 - Fix colouring
 
 
-## Reasoning
-The extension is an effort to understand chrome apis and cross browser functionality by using other contexts.
-
-I also wish to maybe publish it and get a little manageable application on the market to watch it and handle its real-world management and testing.
