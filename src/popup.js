@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     badgeTextColor = document.getElementById('badgeTextColor');
     badgeBgColor = document.getElementById('badgeBgColor');
 
+    const incognito_elements = document.querySelector('.incognito');
+
     const settings = document.querySelector('nav');
     const settings_page = document.getElementById('settings_page');
     const settings_button = document.getElementById('settings_button');
@@ -27,6 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // updating elements
     await chrome.runtime.sendMessage({ action: "getData" }, async (response) => {
         if (!response) return;
+
+        // Update views
+        if (response.incognito_tabs > 0)
+            incognito_elements.style.display = 'block';
 
         // Update stats
         tabs.textContent = response.tabs;

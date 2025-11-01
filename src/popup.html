@@ -121,6 +121,10 @@
         #settings_page {
             display: none;
         }
+
+        .incognito {
+            display: none;
+        }
     </style>
 
 </head>
@@ -150,6 +154,12 @@
                 <label for="badgeTextColor">Text Color</label>
             </span>
         </div>
+        <section id="s_bookmark">
+            <h3>Bookmarks</h3>
+            <div>
+                <div id="bookmarks">Bookmarks: <strong></strong></div>
+            </div>
+        </section>
         <!-- <div>
             Preset Colors
             <div
@@ -197,20 +207,14 @@
                 <div id="tabs">Total Tabs: <strong></strong></div>
                 <div id="current_window_tabs">Current Window Tabs: <strong></strong></div>
                 <div id="inactive_tabs">Inactive Tabs: <strong></strong></div>
-                <div id="incognito_tabs">Incognito Tabs: <strong></strong></div>
+                <div id="incognito_tabs" class="incognito">Incognito Tabs: <strong></strong></div>
             </div>
         </section>
         <section id="s_window">
             <h3>Window data</h3>
             <div>
                 <div id="windows">Total Windows: <strong></strong></div>
-                <div id="incognito_windows">Incognito Windows: <strong></strong></div>
-            </div>
-        </section>
-        <section id="s_bookmark">
-            <h3>Bookmarks</h3>
-            <div>
-                <div id="bookmarks">Bookmarks: <strong></strong></div>
+                <div id="incognito_windows" class="incognito">Incognito Windows: <strong></strong></div>
             </div>
         </section>
     </div>
